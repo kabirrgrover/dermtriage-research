@@ -1,4 +1,4 @@
-# DermTriage: AI-Powered Skin Lesion Triage for Primary Care
+# Skin Lesion Triage: AI-Powered Clinical Decision Support
 
 A clinical decision support tool that helps primary care physicians identify potentially dangerous skin lesions using smartphone photos. Built with Google's MedSigLIP and MedGemma medical AI foundation models, with a focus on fairness across skin tones.
 
@@ -16,7 +16,7 @@ Two interconnected problems make early detection difficult:
 
 **2. Fairness Gap.** Most AI tools for skin cancer detection are trained on datasets composed predominantly of lighter skin tones (Fitzpatrick I-III). As a result, these tools perform significantly worse on patients with darker skin, compounding existing health disparities.
 
-DermTriage addresses both problems by building an AI tool that works on clinical smartphone images and is explicitly trained and evaluated to perform well across different skin tones.
+This project addresses both problems by building an AI tool that works on clinical smartphone images and is explicitly trained and evaluated to perform well across different skin tones.
 
 ---
 
