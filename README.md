@@ -25,27 +25,35 @@ This project addresses both problems: an AI tool that works on clinical smartpho
 ```
 Input Image (448x448)
        |
-       v
-+-----------------------+
-|  MedSigLIP-448        |  Frozen vision encoder (~429M params)
-|  Vision Encoder       |  Pretrained on medical images
-+----------+------------+
-           |
-           v
-+-----------------------+
-|  Classification Head  |  Trainable (596K params)
-|  LayerNorm -> 512     |  Focal Loss, 2x melanoma weight
-|  GELU -> 7 classes    |  Temperature-calibrated output
-+----------+------------+
-           |
-     +-----+------+
-     |             |
-     v             v
-  Grad-CAM      MedGemma-4B
-  heatmap       clinical explanation
+       +---------------------------+
+       |                           |
+       v                           v
++-----------------+       +-----------------+
+| MedSigLIP-448   |       | DermLIP-PanDerm |
+| Vision Encoder  |       | Vision Encoder  |
+| (frozen, 429M)  |       | (frozen, 87M)   |
+| 1152-dim output |       | 512-dim output  |
++--------+--------+       +--------+--------+
+         |                          |
+         v                          v
++-----------------+       +-----------------+
+| 7-Class Head    |       | 7-Class Head    |
+| (596K params)   |       | (265K params)   |
++--------+--------+       +--------+--------+
+         |                          |
+         +--------- Ensemble -------+
+                  (alpha=0.6)
+                      |
+              +-------+-------+
+              |       |       |
+              v       v       v
+          Grad-CAM  Triage  MedGemma-4B
+          heatmap  decision explanation
 ```
 
-The encoder is frozen. Only the 596K-parameter classification head is trained -- 0.14% of total model parameters. This prevents overfitting on datasets of ~10K images and preserves MedSigLIP's pretrained medical knowledge.
+Both encoders are frozen. Only the lightweight classification heads are trained -- under 1M total trainable parameters. The ensemble combines both heads' 7-class probability outputs with alpha=0.6 (60% MedSigLIP, 40% DermLIP), then collapses to a binary malignant/benign triage decision with per-Fitzpatrick thresholds.
+
+MedSigLIP provides high sensitivity (catches melanoma). DermLIP provides complementary specificity (reduces false alarms). The ensemble balances both failure modes.
 
 ### Seven-Class Output
 
@@ -79,9 +87,11 @@ The encoder is frozen. Only the 596K-parameter classification head is trained --
 
 ### Strategy
 
-Mixed training on HAM10000 + PAD-UFES-20 with 3x oversampling of clinical images. Focal Loss (gamma=2.0) with 2x melanoma class weight. AdamW optimizer, cosine annealing schedule, 30 epochs.
+Both heads are trained on HAM10000 + PAD-UFES-20 with 3x oversampling of clinical images. Focal Loss (gamma=2.0) with 2x melanoma class weight. AdamW optimizer, cosine annealing schedule, 30 epochs. Lesion-aware splits ensure no patient-level leakage between train and validation.
 
-This bridged a 30-point domain gap between dermoscopic and clinical image performance, reducing the melanoma recall gap from 31 points to 4 points.
+Mixed training bridged a 30-point domain gap between dermoscopic and clinical image performance, reducing the melanoma recall gap from 31 points to 4 points.
+
+The DermLIP head uses the same training recipe on features from the PanDerm-pretrained DermLIP encoder (512D), which was specifically trained on 2M+ dermatology images. It provides a complementary view -- higher specificity at the cost of lower sensitivity.
 
 ---
 
