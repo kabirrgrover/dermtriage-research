@@ -121,11 +121,13 @@ Evaluated on the Diverse Dermatology Images dataset, which was specifically desi
 
 **Per-skin-tone breakdown (with per-Fitzpatrick thresholds):**
 
-| Fitzpatrick Group | n | AUC | Sensitivity | Specificity |
-|--------------------|---|-----|-------------|-------------|
-| I-II (lighter) | 208 | 0.696 | 87.3% | 46.5% |
-| III-IV (medium) | 241 | 0.792 | 90.3% | 38.0% |
-| V-VI (darker) | 207 | 0.702 | 85.4% | 40.6% |
+| Fitzpatrick Group | n | AUC | Sensitivity |
+|--------------------|---|-----|-------------|
+| I-II (lighter) | 208 | 0.696 | >=85% |
+| III-IV (medium) | 241 | 0.792 | >=85% |
+| V-VI (darker) | 207 | 0.702 | 85.4% |
+
+Per-Fitzpatrick thresholds are calibrated to achieve >=85% sensitivity per group. The overall sensitivity (86.0%) and V-VI sensitivity (85.4%) are verified; per-group specificity varies by threshold and is available in the full results artifacts.
 
 The model maintains high sensitivity across all skin tone groups. Per-Fitzpatrick thresholds close the V-VI sensitivity gap -- the most important equity metric for a clinical triage system.
 
