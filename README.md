@@ -275,14 +275,10 @@ DermTriage is the product of 19 systematic experiments across 20 notebooks. The 
 
 | Component | Specification |
 |-----------|--------------|
-| Primary encoder | MedSigLIP-448 (Google, frozen, ~429M params, 1152D) |
-| Secondary encoder | DermLIP-PanDerm (derm-specific, frozen, ~87M params, 512D) |
-| Ensemble | α=0.6 MedSigLIP + 0.4 DermLIP probability blend |
-| Classification heads | LayerNorm → Dropout(0.3) → Linear → GELU → Dropout(0.3) → Linear(7) |
-| Total trainable parameters | <1M |
-| Triage thresholds | REFER: prob ≥ 0.31 · UNCERTAIN: prob ≥ 0.20 · LOW RISK: prob < 0.20 |
-| Calibration | Temperature scaling T=0.923, ECE=0.067 |
-| Melanoma safety override | P(mel) ≥ 0.24 overrides argmax to flag melanoma |
+| Primary encoder | MedSigLIP-448 (Google, frozen) |
+| Secondary encoder | DermLIP (derm-specific, frozen) |
+| Architecture | Dual-encoder ensemble with lightweight classification heads (<1M trainable params) |
+| Triage output | Three-zone: REFER / UNCERTAIN / LOW RISK |
 | Explainability | MedGemma-4B-IT (clinical text), Grad-CAM (visual heatmap) |
 | Training infrastructure | Google Colab (A100 GPU) |
 | Framework | PyTorch, HuggingFace Transformers, open_clip |
