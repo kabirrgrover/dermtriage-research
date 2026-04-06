@@ -204,9 +204,7 @@ We are especially interested in:
 
 ### Strategy
 
-Both classification heads are trained on HAM10000 + PAD-UFES-20 with 3x oversampling of clinical images. Focal Loss (gamma=2.0) with 2x melanoma class weight. AdamW optimizer, cosine annealing schedule. Lesion-aware splits ensure no patient-level leakage between train and validation.
-
-Mixed-domain training bridged a 30-point performance gap between dermoscopic and clinical images, reducing the melanoma recall gap from 31 points to 4 points. This was the single most impactful intervention in the project.
+Both classification heads are trained on HAM10000 + PAD-UFES-20 using mixed-domain training with class-balanced sampling. Lesion-aware splits ensure no patient-level leakage between train and validation.
 
 ---
 
